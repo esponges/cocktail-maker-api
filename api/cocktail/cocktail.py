@@ -3,7 +3,7 @@ from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
     CreateCocktailResponseSchema,
 )
-from app.cocktail.services.cocktail import CocktailService
+from app.cocktail.services.cocktail.cocktail import CocktailService
 
 cocktail_router = APIRouter()
 
