@@ -31,13 +31,14 @@ class LocalConfig(Config):
 
 
 class ProductionConfig(Config):
-    DEBUG: str = False
+    DEBUG: bool = False
     WRITER_DB_URL: str = f"mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
     READER_DB_URL: str = f"mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
 
 
 def get_config():
     env = os.getenv("ENV", "local")
+    print(env)
     config_type = {
         # "dev": DevelopmentConfig(),
         "local": LocalConfig(),

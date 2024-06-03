@@ -2,8 +2,11 @@
 
 from fastapi import FastAPI
 from api import router
+from dotenv import load_dotenv
 
 from core.config import config
+
+load_dotenv()
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(router)
