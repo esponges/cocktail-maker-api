@@ -1,8 +1,9 @@
 from anthropic import Anthropic
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
-    CreateCocktailResponseSchema,
+    # CreateCocktailResponseSchema,
 )
+from fastapi.responses import JSONResponse
 import json
 import os
 
@@ -11,12 +12,11 @@ class AnthropicService:
     MODEL_NAME = "claude-3-haiku-20240307"
 
     def __init__(self):
-        print("gooo", os.environ.get("ANTHROPIC_API_KEY"))
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(
         self, request: CreateCocktailRequestSchema
-    ) -> CreateCocktailResponseSchema:
+    ):
         tools = [
             {
                 "name": "create_cocktail",
@@ -33,7 +33,7 @@ class AnthropicService:
                             "description": "The step by step recipe of the cocktail. One or two paragraphs max. It should be as specific as possible.",
                         },
                     },
-                    "required": ["name"],
+                    "required": ["name", "recipe"],
                 },
             }
         ]
@@ -74,4 +74,5 @@ class AnthropicService:
         else:
             print("No Cocktail response found in the response.")
 
-        return res
+        # return CreateCocktailResponseSchema(**res) // todo: return schema
+        return JSONResponse(content=res)
