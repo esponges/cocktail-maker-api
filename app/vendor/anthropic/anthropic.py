@@ -1,5 +1,4 @@
 from anthropic import Anthropic
-from anthropic.types import ToolParam
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
     CreateCocktailResponseSchema,
@@ -18,42 +17,6 @@ class AnthropicService:
     async def create_cocktail(
         self, request: CreateCocktailRequestSchema
     ) -> CreateCocktailResponseSchema:
-        #     {
-        #     "name": "print_summary",
-        #     "description": "Prints a summary of the article.",
-        #     "input_schema": {
-        #         "type": "object",
-        #         "properties": {
-        #             "author": {"type": "string", "description": "Name of the article author"},
-        #             "topics": {
-        #                 "type": "array",
-        #                 "items": {"type": "string"},
-        #                 "description": 'Array of topics, e.g. ["tech", "politics"]. Should be as specific as possible, and can overlap.'
-        #             },
-        #             "summary": {"type": "string", "description": "Summary of the article. One or two paragraphs max."},
-        #             "coherence": {"type": "integer", "description": "Coherence of the article's key points, 0-100 (inclusive)"},
-        #             "persuasion": {"type": "number", "description": "Article's persuasion score, 0.0-1.0 (inclusive)"}
-        #         },
-        #         "required": ['author', 'topics', 'summary', 'coherence', 'persuasion', 'counterpoint']
-        #     }
-        # }
-
-        # tools: ToolParam = [
-        #     {
-        #         "name": "create_cocktail",
-        #         "description": "Get the current weather in a given location",
-        #         "input_schema": {
-        #             "type": "object",
-        #             "properties": {
-        #                 "location": {
-        #                     "type": "string",
-        #                     "description": "The city and state, e.g. San Francisco, CA",
-        #                 }
-        #             },
-        #             "required": ["location"],
-        #         },
-        #     }
-        # ]
         tools = [
             {
                 "name": "create_cocktail",
