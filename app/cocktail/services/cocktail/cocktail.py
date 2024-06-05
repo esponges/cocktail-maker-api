@@ -21,4 +21,4 @@ class CocktailService:
     #         required_ingredients="None",
     #         required_tools="None",
     #     )
-        return await AnthropicService().create_cocktail()
+        return await AnthropicService().create_cocktail(request)
