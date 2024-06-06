@@ -13,8 +13,8 @@ class CreateCocktailRequestSchema(BaseModel):
         max_length=255,
         examples=["Shot", "Cocktail", "Longdrink", "Mocktail"],
     )
-    cost: str = Field(
-        description="The cost of the cocktail", max_length=255, examples=["$5", "$10"]
+    cost: int = Field(
+        description="The cost of the cocktail", examples=[5, 10]
     )
     complexity: str = Field(
         description="The complexity of the cocktail",

@@ -14,9 +14,7 @@ class AnthropicService:
     def __init__(self):
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-    async def create_cocktail(
-        self, request: CreateCocktailRequestSchema
-    ):
+    async def create_cocktail(self, request: CreateCocktailRequestSchema):
         tools = [
             {
                 "name": "create_cocktail",
@@ -32,8 +30,45 @@ class AnthropicService:
                             "type": "string",
                             "description": "The step by step recipe of the cocktail. One or two paragraphs max. It should be as specific as possible.",
                         },
+                        "is_alcoholic": {
+                            "type": "boolean",
+                            "description": "Whether the cocktail is alcoholic",
+                        },
+                        "mixers": {
+                            "type": "array",
+                            "description": "The mixers of the cocktail",
+                            "items": {
+                                "type": "string",
+                                "description": "The mixers of the cocktail. Could be the raw ingredient (like Vodka) or the brand (like Absolut Vodka).",
+                            },
+                        },
+                        "size": {
+                            "type": "string",
+                            "description": "The size of the cocktail",
+                        },
+                        "cost": {
+                            "type": "integer",
+                            "description": "The cost of the cocktail",
+                        },
+                        "complexity": {
+                            "type": "string",
+                            "description": "The complexity of the cocktail",
+                        },
+                        "requires_tools": {
+                            "type": "boolean",
+                            "description": "Whether the cocktail requires special tools",
+                        },
                     },
-                    "required": ["name", "recipe"],
+                    "required": [
+                        "name",
+                        "recipe",
+                        "is_alcoholic",
+                        "mixers",
+                        "size",
+                        "cost",
+                        "complexity",
+                        "requires_tools",
+                    ],
                 },
             }
         ]
@@ -55,9 +90,7 @@ class AnthropicService:
             model=self.MODEL_NAME,
             max_tokens=4096,
             tools=tools,
-            messages=[
-                {"role": "user", "content": query}
-            ],
+            messages=[{"role": "user", "content": query}],
         )
 
         print(response)
