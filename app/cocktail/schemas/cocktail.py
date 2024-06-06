@@ -9,20 +9,27 @@ class CreateCocktailRequestSchema(BaseModel):
         examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
     )
     size: str = Field(
+        None,
         description="The size of the cocktail",
         max_length=255,
         examples=["Shot", "Cocktail", "Longdrink", "Mocktail"],
     )
-    cost: int = Field(
-        description="The cost of the cocktail", examples=[5, 10]
-    )
+    cost: int = Field(None, description="The cost of the cocktail", examples=[5, 10])
     complexity: str = Field(
+        None,
         description="The complexity of the cocktail",
         max_length=255,
         examples=["Easy", "Medium", "Hard"],
     )
     requires_tools: bool = Field(
+        None,
         description="Whether the cocktail requires special tools",
+    )
+    previous_recipes: list = Field(
+        None,
+        description="The previous recipes of the cocktail",
+        max_length=255,
+        examples=["[Add vodka, add gin, add tequila]", "[Add vodka, add bacardi]"],
     )
 
 
