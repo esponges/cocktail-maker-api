@@ -1,7 +1,6 @@
 from anthropic import Anthropic
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
-    # CreateCocktailResponseSchema,
 )
 from fastapi.responses import JSONResponse
 import json
@@ -54,9 +53,13 @@ class AnthropicService:
                             "type": "string",
                             "description": "The complexity of the cocktail",
                         },
-                        "requires_tools": {
-                            "type": "boolean",
-                            "description": "Whether the cocktail requires special tools",
+                        "required_tools": {
+                            "type": "array",
+                            "description": "A list of required tools",
+                            "items": {
+                                "type": "string",
+                                "description": "The name of the required tool",
+                            },
                         },
                     },
                     "required": [
@@ -81,6 +84,7 @@ class AnthropicService:
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}".
             - Should require mixing tools: {request.requires_tools or "False"}".
+            {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
         Use the create_cocktail tool.
@@ -91,6 +95,7 @@ class AnthropicService:
             max_tokens=4096,
             tools=tools,
             messages=[{"role": "user", "content": query}],
+            temperature=0.7,
         )
 
         print(response)
