@@ -27,7 +27,7 @@ class AnthropicService:
                         },
                         "recipe": {
                             "type": "string",
-                            "description": "The step by step recipe of the cocktail. One or two paragraphs max. It should be as specific as possible.",
+                            "description": "The step by step recipe of the cocktail.",
                         },
                         "is_alcoholic": {
                             "type": "boolean",
@@ -38,7 +38,7 @@ class AnthropicService:
                             "description": "The mixers of the cocktail",
                             "items": {
                                 "type": "string",
-                                "description": "The mixers of the cocktail. Could be the raw ingredient (like Vodka) or the brand (like Absolut Vodka).",
+                                "description": "The mixers of the cocktail.",
                             },
                         },
                         "size": {
@@ -78,11 +78,14 @@ class AnthropicService:
 
         query = f"""
         <text>
-            You are a masterful cocktail creator. Create a cocktail based on the following input.
-            - It should use the following mixers: {request.mixers.join(", ")}.
-            - Its size should be {request.size or "Unknown"}".
+            You are a masterful cocktail creator.
+            Create a well detailed step by step (step 1 - do this, step 2 - do that, etc.) cocktail based on the input.
+            First specify a list of the required ingredients and tools (if any).
+
+            - It should use the following mixers: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.
+            - Its size should be {request.size or "Unknown"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD".
-            - Its complexity should be {request.complexity or "Medium"}".
+            - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard.
             - Should require mixing tools: {request.requires_tools or "False"}".
             {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
@@ -98,7 +101,7 @@ class AnthropicService:
             temperature=0.7,
         )
 
-        print(response)
+        # TODO: store in vector store
 
         res = None
         for content in response.content:

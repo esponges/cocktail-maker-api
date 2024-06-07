@@ -7,4 +7,10 @@ from app.vendor.anthropic.anthropic import AnthropicService
 class CocktailService:
     async def create_cocktail(
         self, request: CreateCocktailRequestSchema):
-        return await AnthropicService().create_cocktail(request)
+        # TODO: implement similarity search from vector store before creating a new one
+
+        res = await AnthropicService().create_cocktail(request)
+
+        # TODO: parse the steps and use existing images from cdn
+
+        return res
