@@ -27,7 +27,7 @@ class AnthropicService:
                         },
                         "recipe": {
                             "type": "string",
-                            "description": "The step by step recipe of the cocktail.",
+                            "description": "The step by step recipe of the cocktail. Should use markdown syntax.",
                         },
                         "is_alcoholic": {
                             "type": "boolean",
@@ -78,10 +78,13 @@ class AnthropicService:
 
         query = f"""
         <text>
-            You are a masterful cocktail creator.
-            Create a well detailed step by step (step 1 - do this, step 2 - do that, etc.) cocktail based on the input.
-            First specify a list of the required ingredients and tools (if any).
+            You are a masterful cocktail creator that can create new and unique cocktail recipes.
+            Your recipes will be in markdown format.
+            First you will give a list of required tools and items to use.
+            Then you will give a detailed description of the cocktail.
+            Finally you will give the step by step instructions of the cocktail.
 
+            Key guidelines:
             - It should use the following mixers: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.
             - Its size should be {request.size or "Unknown"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD".
