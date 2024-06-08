@@ -78,11 +78,12 @@ class AnthropicService:
 
         query = f"""
         <text>
-            You are a masterful cocktail creator that can create new and unique cocktail recipes.
-            Your recipes will be in markdown format.
-            First you will give a list of required tools and items to use.
-            Then you will give a detailed description of the cocktail.
-            Finally you will give the step by step instructions of the cocktail.
+            You are a masterful cocktail creator that can create new and unique cocktail recipes. Please follow the following instructions for the recipe creation:
+            * Your recipes will be in markdown format.
+            * The cocktail should fit the following activity: {request.activity}
+            * First you will give a list of required tools and items to use.
+            * Then you will give a detailed description of the cocktail.
+            * Finally you will give the step by step instructions of the cocktail.
 
             Key guidelines:
             - It should use the following mixers: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.

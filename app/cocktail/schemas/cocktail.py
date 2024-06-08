@@ -31,6 +31,12 @@ class CreateCocktailRequestSchema(BaseModel):
         max_length=255,
         examples=["[Add vodka, add gin, add tequila]", "[Add vodka, add bacardi]"],
     )
+    activity: str = Field(
+        None,
+        description="The activity or situation where the cocktail is used",
+        max_length=255,
+        examples=["Pool party", "relaxing", "dinner with friends"],
+    )
 
 
 class CreateCocktailResponseSchema(BaseModel):
