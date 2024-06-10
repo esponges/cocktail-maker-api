@@ -2,11 +2,11 @@ from pydantic import BaseModel, Field
 
 
 class CreateCocktailRequestSchema(BaseModel):
-    mixers: str = Field(
+    mixers: list = Field(
         ...,
         description="The mixers of the cocktail",
         max_length=255,
-        examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
+        examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
     )
     size: str = Field(
         None,
@@ -29,7 +29,7 @@ class CreateCocktailRequestSchema(BaseModel):
         None,
         description="The previous recipes of the cocktail",
         max_length=255,
-        examples=["[Add vodka, add gin, add tequila]", "[Add vodka, add bacardi]"],
+        examples=["Add vodka, add gin, add tequila", "Add vodka, add bacardi"],
     )
     moment: str = Field(
         None,

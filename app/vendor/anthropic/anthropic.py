@@ -3,7 +3,7 @@ from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
     CreateCocktailResponseSchema,
 )
-# from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse
 import json
 import os
 
@@ -95,11 +95,11 @@ class AnthropicService:
             * Finally you will give the step by step instructions of the cocktail.
 
             Key guidelines:
-            - The recipe MUST (not optional) at least use: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.
+            - The recipe MUST (not optional) at least use: {" ".join(request.mixers)}. You could suggest a brand if only raw mixers are provided.
             - Its size should be {request.size or "Unknown"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard.
-            - Should require mixing tools: {request.requires_tools or "False"}".
+            - It could use some of these mixing tools: {request.requires_tools or "False"}".
             {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
@@ -129,7 +129,8 @@ class AnthropicService:
             print("No Cocktail response found in the response.")
 
         try :
-            return CreateCocktailResponseSchema(**res)
+            # return CreateCocktailResponseSchema(**res)
+            return JSONResponse(res)
         except Exception as e:
             print(f"Error parsing response: {e}")
             return None
