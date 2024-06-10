@@ -1,8 +1,9 @@
 from anthropic import Anthropic
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
+    CreateCocktailResponseSchema,
 )
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
 import json
 import os
 
@@ -53,6 +54,14 @@ class AnthropicService:
                             "type": "string",
                             "description": "The complexity of the cocktail",
                         },
+                        "required_ingredients": {
+                            "type": "array",
+                            "description": "A list of required ingredients",
+                            "items": {
+                                "type": "string",
+                                "description": "The name of the required ingredient",
+                            },
+                        },
                         "required_tools": {
                             "type": "array",
                             "description": "A list of required tools",
@@ -80,13 +89,13 @@ class AnthropicService:
         <text>
             You are a masterful cocktail creator that can create new and unique cocktail recipes. Please follow the following instructions for the recipe creation:
             * Your recipes will be in markdown format.
-            * The cocktail should fit the following activity: {request.activity}
+            * The cocktail should fit the following activity: {request.moment}
             * First you will give a list of required tools and items to use.
             * Then you will give a detailed description of the cocktail.
             * Finally you will give the step by step instructions of the cocktail.
 
             Key guidelines:
-            - It should use the following mixers: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.
+            - The recipe MUST (not optional) at least use: {request.mixers.join(", ")}. You could suggest a brand if only raw mixers are provided.
             - Its size should be {request.size or "Unknown"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard.
@@ -119,5 +128,9 @@ class AnthropicService:
         else:
             print("No Cocktail response found in the response.")
 
-        # return CreateCocktailResponseSchema(**res) // todo: return schema
-        return JSONResponse(content=res)
+        try :
+            return CreateCocktailResponseSchema(**res)
+        except Exception as e:
+            print(f"Error parsing response: {e}")
+            return None
+        

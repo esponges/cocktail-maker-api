@@ -31,7 +31,7 @@ class CreateCocktailRequestSchema(BaseModel):
         max_length=255,
         examples=["[Add vodka, add gin, add tequila]", "[Add vodka, add bacardi]"],
     )
-    activity: str = Field(
+    moment: str = Field(
         None,
         description="The activity or situation where the cocktail is used",
         max_length=255,
@@ -41,7 +41,7 @@ class CreateCocktailRequestSchema(BaseModel):
 
 class CreateCocktailResponseSchema(BaseModel):
     id: str = Field(
-        ...,
+        None,
         description="The id of the cocktail",
         max_length=255,
         examples=["a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"],
@@ -55,18 +55,17 @@ class CreateCocktailResponseSchema(BaseModel):
     recipe: str = Field(
         ...,
         description="The recipe of the cocktail",
-        max_length=255,
-        examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
+        examples=["Shake it with soda", "Mix it with rum"],
     )
     is_alcoholic: bool = Field(
         ...,
         description="Whether the cocktail is alcoholic",
     )
-    mixers: str = Field(
+    mixers: list = Field(
         ...,
         description="The mixers of the cocktail",
         max_length=255,
-        examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
+        examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
     )
     size: str = Field(
         ...,
@@ -74,11 +73,11 @@ class CreateCocktailResponseSchema(BaseModel):
         max_length=255,
         examples=["Shot", "Cocktail", "Longdrink", "Mocktail"],
     )
-    cost: str = Field(
+    cost: float = Field(
         ...,
         description="The cost of the cocktail",
         max_length=255,
-        examples=["$5", "$10"],
+        examples=[5, 10],
     )
     complexity: str = Field(
         ...,
@@ -86,15 +85,15 @@ class CreateCocktailResponseSchema(BaseModel):
         max_length=255,
         examples=["Easy", "Medium", "Hard"],
     )
-    required_ingredients: str = Field(
+    required_ingredients: list = Field(
         ...,
         description="The required ingredients of the cocktail",
         max_length=255,
-        examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
+        examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
     )
-    required_tools: str = Field(
+    required_tools: list = Field(
         ...,
         description="The required tools of the cocktail",
         max_length=255,
-        examples=["[Vodka, Gin, Tequila]", "[Vodka, Bacardi]"],
+        examples=[["Shaker", "Vodka", "Gin", "Tequila"], ["Shaker", "Jigger", "Bacardi"]],
     )
