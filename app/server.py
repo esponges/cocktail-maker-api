@@ -1,6 +1,7 @@
 # from typing import Union
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from api import router
 from dotenv import load_dotenv
 
@@ -12,6 +13,8 @@ def init_routers(app_: FastAPI) -> None:
     app_.include_router(router)
 
 def create_app() -> FastAPI:
+
+
     app_ = FastAPI(
         title="Hide",
         description="Hide API",
@@ -24,6 +27,20 @@ def create_app() -> FastAPI:
     init_routers(app_=app_)
     # init_listeners(app_=app_)
     # init_cache()
+    origins = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+    ]
+
+    app_.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     return app_
 
 
