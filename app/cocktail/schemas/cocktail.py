@@ -21,9 +21,9 @@ class CreateCocktailRequestSchema(BaseModel):
         max_length=255,
         examples=["Easy", "Medium", "Hard"],
     )
-    requires_tools: bool = Field(
+    required_tools: list = Field(
         None,
-        description="Whether the cocktail requires special tools",
+        description="A list of required tools",
     )
     previous_recipes: list = Field(
         None,

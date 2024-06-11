@@ -79,7 +79,7 @@ class AnthropicService:
                         "size",
                         "cost",
                         "complexity",
-                        "requires_tools",
+                        "required_tools",
                     ],
                 },
             }
@@ -99,7 +99,7 @@ class AnthropicService:
             - Its size should be {request.size or "Unknown"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard.
-            - It could use some of these mixing tools: {request.requires_tools or "False"}".
+            - It could use some of these mixing tools: {" ".join(request.required_tools) or "False"}".
             {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
