@@ -1,7 +1,7 @@
 from anthropic import Anthropic
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
-    CreateCocktailResponseSchema,
+    # CreateCocktailResponseSchema,
 )
 from fastapi.responses import JSONResponse
 import json
@@ -26,9 +26,26 @@ class AnthropicService:
                             "type": "string",
                             "description": "The name of the cocktail",
                         },
-                        "recipe": {
+                        "description": {
                             "type": "string",
-                            "description": "The step by step recipe of the cocktail. Should use markdown syntax.",
+                            "description": "A description of the cocktail — this is NOT the recipe",
+                        },
+                        "steps": {
+                            "type": "array",
+                            "description": "The steps of the cocktail.",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "description": {
+                                        "type": "string",
+                                        "description": "The description of what to do",
+                                    },
+                                    "index": {
+                                        "type": "integer",
+                                        "description": "The index of the step",
+                                    },
+                                }
+                            },
                         },
                         "is_alcoholic": {
                             "type": "boolean",
