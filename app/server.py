@@ -14,7 +14,6 @@ def init_routers(app_: FastAPI) -> None:
 
 def create_app() -> FastAPI:
 
-
     app_ = FastAPI(
         title="Hide",
         description="Hide API",

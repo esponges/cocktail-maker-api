@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from typing import List, Dict
 
 class CreateCocktailRequestSchema(BaseModel):
     mixers: list = Field(
@@ -52,10 +52,18 @@ class CreateCocktailResponseSchema(BaseModel):
         max_length=255,
         examples=["Mojito Dessert", "Caipirinha Boom"],
     )
-    recipe: str = Field(
+    description: str = Field(
         ...,
         description="The recipe of the cocktail",
-        examples=["Shake it with soda", "Mix it with rum"],
+        examples=["A powerful cocktail", "A classic cocktail"],
+    )
+    steps: List[Dict[str, str]] = Field(
+        None,
+        description="The steps of the cocktail.",
+        examples=[
+            {"description": "Step 1", "index": 1},
+            {"description": "Step 2", "index": 2},
+        ],
     )
     is_alcoholic: bool = Field(
         ...,
@@ -95,5 +103,8 @@ class CreateCocktailResponseSchema(BaseModel):
         ...,
         description="The required tools of the cocktail",
         max_length=255,
-        examples=[["Shaker", "Vodka", "Gin", "Tequila"], ["Shaker", "Jigger", "Bacardi"]],
+        examples=[
+            ["Shaker", "Vodka", "Gin", "Tequila"],
+            ["Shaker", "Jigger", "Bacardi"],
+        ],
     )
