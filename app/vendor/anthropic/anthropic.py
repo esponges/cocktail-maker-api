@@ -44,6 +44,7 @@ class AnthropicService:
                                         "type": "integer",
                                         "description": "The index of the step",
                                     },
+                                    # todo: return an action that can be associated with an image from the cdn
                                 }
                             },
                         },
@@ -90,12 +91,14 @@ class AnthropicService:
                     },
                     "required": [
                         "name",
-                        "recipe",
+                        "description",
+                        "steps"
                         "is_alcoholic",
                         "mixers",
                         "size",
                         "cost",
                         "complexity",
+                        "required_ingredients",
                         "required_tools",
                     ],
                 },
@@ -131,7 +134,7 @@ class AnthropicService:
             temperature=0.7,
         )
 
-        # TODO: store in vector store
+        # TODO: store in vector store (also in a regular DB?)
 
         res = None
         for content in response.content:
