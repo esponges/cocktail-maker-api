@@ -82,7 +82,7 @@ class AnthropicService:
                         },
                         "required_tools": {
                             "type": "array",
-                            "description": "A list of required tools",
+                            "description": "A list of required tools. Could be empty if no tools are required",
                             "items": {
                                 "type": "string",
                                 "description": "The name of the required tool",
@@ -110,7 +110,8 @@ class AnthropicService:
             * Your recipes will be in markdown format.
             * The cocktail should fit the following activity: {request.moment}
             * Then you will give a general and understandable description of the cocktail.
-            * Finally you will give the SUPER DETAILED step by step instructions of the cocktail. This includes detailed portions of each ingredient.
+            * Finally you will give the SUPER DETAILED step by step instructions of the cocktail. This includes detailed portions of each ingredient. 
+            If no tools were provided the steps won't use any tools. Not even a Shaker. 
             Avoid squashing several steps into one. For example:
 
             - WRONG: Fill a cocktail shaker with ice. Add 2 oz of mezcal, 1 oz of freshly brewed espresso, and 1 oz of fresh lemon juice. Shake vigorously for 10-15 seconds until well-chilled.
@@ -126,7 +127,7 @@ class AnthropicService:
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard. A Hard cocktail is usually more expensive than an Easy cocktail
             and it usually requires more time and tooling.
-            {"- It could use some of these mixing tools: ".join(request.required_tools) or "- No available tools have been provided."}".
+            {"- It could use some of these mixing tools: ".join(request.required_tools) or "- No available tools have been provided. Avoid using any tools."}".
             {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
