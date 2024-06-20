@@ -127,7 +127,8 @@ class AnthropicService:
             - Its raw cost should be of {request.cost or "5"} USD".
             - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard. A Hard cocktail is usually more expensive than an Easy cocktail
             and it usually requires more time and tooling.
-            {"- It could use some of these mixing tools: ".join(request.required_tools) or "- No available tools have been provided. Avoid using any tools."}".
+            - The steps require a shaker: {"True" if request.has_shaker else "False"}".
+            {"- It could use some of these mixing tools: ".join(request.required_tools) or "- No extra tools have been provided."}".
             {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 

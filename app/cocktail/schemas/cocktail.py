@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict
 
+
 class CreateCocktailRequestSchema(BaseModel):
     mixers: list = Field(
         ...,
@@ -36,6 +37,10 @@ class CreateCocktailRequestSchema(BaseModel):
         description="The activity or situation where the cocktail is used",
         max_length=255,
         examples=["Pool party", "relaxing", "dinner with friends"],
+    )
+    has_shaker: bool = Field(
+        None,
+        description="Whether the cocktail has a shaker",
     )
 
 
