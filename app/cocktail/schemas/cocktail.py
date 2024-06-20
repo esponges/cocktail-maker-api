@@ -46,7 +46,6 @@ class CreateCocktailRequestSchema(BaseModel):
 
 class CreateCocktailResponseSchema(BaseModel):
     id: str = Field(
-        None,
         description="The id of the cocktail",
         max_length=255,
         examples=["a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"],

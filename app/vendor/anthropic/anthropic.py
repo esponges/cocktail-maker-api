@@ -3,6 +3,7 @@ from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
     # CreateCocktailResponseSchema,
 )
+import uuid
 from fastapi.responses import JSONResponse
 import json
 import os
@@ -45,7 +46,7 @@ class AnthropicService:
                                         "description": "The index of the step",
                                     },
                                     # todo: return an action that can be associated with an image from the cdn
-                                }
+                                },
                             },
                         },
                         "is_alcoholic": {
@@ -92,8 +93,7 @@ class AnthropicService:
                     "required": [
                         "name",
                         "description",
-                        "steps"
-                        "is_alcoholic",
+                        "steps" "is_alcoholic",
                         "mixers",
                         "size",
                         "cost",
@@ -157,10 +157,10 @@ class AnthropicService:
         else:
             print("No Cocktail response found in the response.")
 
-        try :
+        try:
+            res["id"] = str(uuid.uuid4())
             # return CreateCocktailResponseSchema(**res)
             return JSONResponse(res)
         except Exception as e:
             print(f"Error parsing response: {e}")
             return None
-        
