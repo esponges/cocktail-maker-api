@@ -62,7 +62,6 @@ class CreateCocktailResponseSchema(BaseModel):
         examples=["A powerful cocktail", "A classic cocktail"],
     )
     steps: List[Dict[str, str]] = Field(
-        None,
         description="The steps of the cocktail.",
         examples=[
             {"description": "Step 1", "index": 1},
@@ -88,7 +87,6 @@ class CreateCocktailResponseSchema(BaseModel):
     cost: float = Field(
         ...,
         description="The cost of the cocktail",
-        max_length=255,
         examples=[5, 10],
     )
     complexity: str = Field(
@@ -104,7 +102,6 @@ class CreateCocktailResponseSchema(BaseModel):
         examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
     )
     required_tools: list = Field(
-        ...,
         description="The required tools of the cocktail",
         max_length=255,
         examples=[

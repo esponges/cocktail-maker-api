@@ -1,12 +1,12 @@
 from anthropic import Anthropic
-from app.cocktail.schemas.cocktail import (
-    CreateCocktailRequestSchema,
-    # CreateCocktailResponseSchema,
-)
 import uuid
-from fastapi.responses import JSONResponse
 import json
 import os
+
+from app.cocktail.schemas.cocktail import (
+    CreateCocktailRequestSchema,
+    CreateCocktailResponseSchema,
+)
 
 
 class AnthropicService:
@@ -42,7 +42,7 @@ class AnthropicService:
                                         "description": "The super detailed description of what to do. Includes portion sizes, directions, etc.",
                                     },
                                     "index": {
-                                        "type": "integer",
+                                        "type": "string",
                                         "description": "The index of the step",
                                     },
                                     # todo: return an action that can be associated with an image from the cdn
@@ -159,8 +159,7 @@ class AnthropicService:
 
         try:
             res["id"] = str(uuid.uuid4())
-            # return CreateCocktailResponseSchema(**res)
-            return JSONResponse(res)
+            return CreateCocktailResponseSchema(**res)
         except Exception as e:
             print(f"Error parsing response: {e}")
             return None
