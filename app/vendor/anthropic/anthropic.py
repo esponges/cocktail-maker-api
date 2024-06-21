@@ -10,7 +10,7 @@ from app.cocktail.schemas.cocktail import (
 
 
 class AnthropicService:
-    MODEL_NAME = "claude-3-haiku-20240307"
+    MODEL_NAME = "claude-3-5-sonnet-20240620"
 
     def __init__(self):
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
