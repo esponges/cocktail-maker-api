@@ -107,7 +107,6 @@ class AnthropicService:
         query = f"""
         <text>
             You are a masterful cocktail creator that can create new and unique cocktail recipes. Please follow the following instructions for the recipe creation:
-            * Your recipes will be in markdown format.
             * The cocktail should fit the following activity: {request.moment}
             * Then you will give a general and understandable description of the cocktail.
             * Finally you will give the SUPER DETAILED step by step instructions of the cocktail. This includes detailed portions of each ingredient. 
@@ -121,15 +120,15 @@ class AnthropicService:
                 3. Shake for 10-15 seconds until well-chilled. 
 
             Key guidelines:
-            - The steps MUST (not optional) at least use: {" ".join(request.mixers)}. You could suggest a brand if only raw mixers are provided.
-            You could also suggest extra mixers if only few mixers (less than 2) are provided.
-            - Its size should be {request.size or "any of your choice"}". Options are: Shot, Cocktail, Longdrink, Mocktail.
-            - Its raw cost should be of {request.cost or "5"} USD".
-            - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard. A Hard cocktail is usually more expensive than an Easy cocktail
-            and it usually requires more time and tooling.
-            - The steps require a shaker: {"True" if request.has_shaker else "False"}".
-            {"- It could use some of these mixing tools: ".join(request.required_tools) or "- No extra tools have been provided."}".
-            {f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
+            - The steps MUST (not optional) at least use the following mixers: {", ".join(request.mixers)}.
+            {"Along with the previous ingredients you can suggest extra mixers if necessary" if request.suggest_mixers else ""}
+            - Its size should be {request.size or "any of your choice"}. Options are: Shot, Cocktail, Longdrink, Mocktail.
+            - Its raw cost should be of {request.cost or "5"} USD.
+            - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard. 
+            A Hard cocktail usually requires more time and tooling and it is not suitable for large groups or first-timers.
+            - The steps require a shaker: {"True" if request.has_shaker else "False"}.
+            \n{"- It could use some of these mixing tools: ".join(request.required_tools) or "- No extra tools have been provided."}.
+            \n{f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
         Use the create_cocktail tool.

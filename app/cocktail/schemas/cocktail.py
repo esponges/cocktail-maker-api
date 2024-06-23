@@ -9,6 +9,10 @@ class CreateCocktailRequestSchema(BaseModel):
         max_length=255,
         examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
     )
+    suggest_mixers: bool = Field(
+        False,
+        description="Whether to suggest mixers",
+    )
     size: str = Field(
         None,
         description="The size of the cocktail",
