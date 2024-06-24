@@ -8,15 +8,17 @@ class PineconeService:
     def __init__(self):
         self.client = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
 
+    # index.upsert([{'id': 'id1', 'values': [1.0, 2.0, 3.0], 'metadata': {'key': 'value'}},
     async def upsert(
         self,
         vectors: Union[List[GRPCVector], List[NonGRPCVector], List[tuple], List[dict]],
     ):
+        # TODO: probably use env vars for the namespace and index name 
         index = self.client.Index("test-1")
 
         res = index.upsert(
             vectors,
-            namespace="fastapi-test",
+            namespace="cocktails",
         )
 
         return res

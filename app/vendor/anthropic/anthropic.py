@@ -17,12 +17,6 @@ class AnthropicService:
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(self, request: CreateCocktailRequestSchema):
-        test_embedding = await OpenAIService().create_embedding("TEST")
-        test_vector = test_embedding.data[0].embedding
-        test_vector = await PineconeService().upsert(test_vector)
-    
-        print(test_vector)
-
         tools = [
             {
                 "name": "create_cocktail",
@@ -92,8 +86,8 @@ class AnthropicService:
                     "required": [
                         "name",
                         "description",
-                        "steps" "is_alcoholic",
-                        "mixers",
+                        "steps",
+                        "is_alcoholic",
                         "size",
                         "cost",
                         "complexity",
@@ -158,7 +152,10 @@ class AnthropicService:
 
             embedding = await OpenAIService().create_embedding(query)
             embedding_data = embedding.data[0].embedding
-            
+            # {"id": "vec1", "values": [1.0, 1.5]},
+            vector = [
+                {"id": res["id"], "values": embedding_data}
+            ]
             vector_upsert = await PineconeService().upsert(vector)
 
             print(f"Upserted vector: {vector_upsert}")
