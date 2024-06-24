@@ -76,12 +76,6 @@ class CreateCocktailResponseSchema(BaseModel):
         ...,
         description="Whether the cocktail is alcoholic",
     )
-    mixers: list = Field(
-        ...,
-        description="The mixers of the cocktail",
-        max_length=255,
-        examples=[["Vodka", "Gin", "Tequila"], ["Vodka", "Bacardi"]],
-    )
     size: str = Field(
         ...,
         description="The size of the cocktail",
