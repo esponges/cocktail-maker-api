@@ -1,12 +1,13 @@
 from anthropic import Anthropic
 import uuid
-import json
 import os
 
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
     CreateCocktailResponseSchema,
 )
+from app.vendor.openai.openai import OpenAIService
+from app.vendor.pinecone.pinecone import PineconeService
 
 
 class AnthropicService:
@@ -16,6 +17,12 @@ class AnthropicService:
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(self, request: CreateCocktailRequestSchema):
+        test_embedding = await OpenAIService().create_embedding("TEST")
+        test_vector = test_embedding.data[0].embedding
+        test_vector = await PineconeService().upsert(test_vector)
+    
+        print(test_vector)
+
         tools = [
             {
                 "name": "create_cocktail",
@@ -52,14 +59,6 @@ class AnthropicService:
                         "is_alcoholic": {
                             "type": "boolean",
                             "description": "Whether the cocktail is alcoholic",
-                        },
-                        "mixers": {
-                            "type": "array",
-                            "description": "The mixers of the cocktail",
-                            "items": {
-                                "type": "string",
-                                "description": "The mixers of the cocktail. Usually the base of the cocktail.",
-                            },
                         },
                         "size": {
                             "type": "string",
@@ -124,11 +123,11 @@ class AnthropicService:
             {"Along with the previous ingredients you can suggest extra mixers if necessary" if request.suggest_mixers else ""}
             - Its size should be {request.size or "any of your choice"}. Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD.
-            - Its complexity should be {request.complexity or "Medium"}". Options are: Easy, Medium, Hard. 
+            - Its complexity should be {request.complexity or "Medium"}. Options are: Easy, Medium, Hard. 
             A Hard cocktail usually requires more time and tooling and it is not suitable for large groups or first-timers.
             - The steps require a shaker: {"True" if request.has_shaker else "False"}.
-            \n{"- It could use some of these mixing tools: ".join(request.required_tools) or "- No extra tools have been provided."}.
-            \n{f"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
+            {("- The steps could use any of these tools: " + ", ".join(request.required_tools)) if request.required_tools else ""}
+            {"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
         </text>
 
         Use the create_cocktail tool.
@@ -150,15 +149,21 @@ class AnthropicService:
                 res = content.input
                 break
 
-        if res:
-            print("Cocktail response (JSON):")
-            print(json.dumps(res, indent=2))
-        else:
-            print("No Cocktail response found in the response.")
-
         try:
-            res["id"] = str(uuid.uuid4())
-            return CreateCocktailResponseSchema(**res)
+            if res is not None:
+                res["id"] = str(uuid.uuid4())
+                apiResponse = CreateCocktailResponseSchema(**res)
+            else:
+                raise Exception("No response from API")
+
+            embedding = await OpenAIService().create_embedding(query)
+            embedding_data = embedding.data[0].embedding
+            
+            vector_upsert = await PineconeService().upsert(vector)
+
+            print(f"Upserted vector: {vector_upsert}")
+
+            return apiResponse
         except Exception as e:
             print(f"Error parsing response: {e}")
             return None
