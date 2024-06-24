@@ -13,6 +13,8 @@ pydantic-settings = "^2.2.1"
 sqlalchemy = "^2.0.30"
 anthropic = "^0.28.0"
 python-dotenv = "^1.0.1"
+pinecone-client = {extras = ["grpc"], version = "^4.1.1"}
+openai = "^1.35.3"
 
 [build-system]
 requires = ["poetry-core"]
