@@ -18,21 +18,6 @@ class AnthropicService:
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(self, request: CreateCocktailRequestSchema):
-        with psycopg.connect(
-            host=os.environ.get("COCKROACH_DB_HOST"),
-            user=os.environ.get("COCKROACH_DB_USER"),
-            password=os.environ.get("COCKROACH_DB_PASSWORD") or "",
-            dbname="cocktails",
-            port=os.environ.get("COCKROACH_DB_PORT") or 123456,
-            # cursor_factory=psycopg.cursors.DictCursor,
-        ) as connection:
-            with connection.cursor() as cursor:
-                # all the columns
-                sql = "SHOW COLUMNS FROM predictions"
-                cursor.execute(sql)
-                results = cursor.fetchall()
-                print(results)
-
         tools = [
             {
                 "name": "create_cocktail",
@@ -173,23 +158,48 @@ class AnthropicService:
             embedding = await OpenAIService().create_embedding(query)
             embedding_data = embedding.data[0].embedding
             # {"id": "vec1", "values": [1.0, 1.5]},
-            vector = [
-                {"id": res["id"], "values": embedding_data}
-            ]
+            vector = [{"id": res["id"], "values": embedding_data}]
             vector_upsert = await PineconeService().upsert(vector)
 
             # TODO: store in RDB for caching
-            # id UUID PRIMARY KEY,
-            # name VARCHAR(255) NOT NULL,
-            # description TEXT NOT NULL,
-            # steps JSONB NOT NULL,
-            # is_alcoholic BOOLEAN NOT NULL,
-            # size VARCHAR(255) NOT NULL,
-            # cost DECIMAL(10, 2) NOT NULL,
-            # complexity VARCHAR(255) NOT NULL,
-            # required_ingredients TEXT[] NOT NULL,
-            # required_tools TEXT[]
-            
+            with psycopg.connect(
+                host=os.environ.get("COCKROACH_DB_HOST"),
+                user=os.environ.get("COCKROACH_DB_USER"),
+                password=os.environ.get("COCKROACH_DB_PASSWORD") or "",
+                dbname="cocktails",
+                port=os.environ.get("COCKROACH_DB_PORT") or 123456,
+            ) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO predictions (id, name, description, steps, is_alcoholic, size, cost, complexity, required_ingredients, required_tools)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (id) DO UPDATE
+                        SET
+                            name = EXCLUDED.name,
+                            description = EXCLUDED.description,
+                            steps = EXCLUDED.steps,
+                            is_alcoholic = EXCLUDED.is_alcoholic,
+                            size = EXCLUDED.size,
+                            cost = EXCLUDED.cost,
+                            complexity = EXCLUDED.complexity,
+                            required_ingredients = EXCLUDED.required_ingredients,
+                            required_tools = EXCLUDED.required_tools
+                        """,
+                        (
+                            apiResponse.id,
+                            apiResponse.name,
+                            apiResponse.description,
+                            apiResponse.model_dump_json(include={"steps"}),
+                            apiResponse.is_alcoholic,
+                            apiResponse.size,
+                            apiResponse.cost,
+                            apiResponse.complexity,
+                            apiResponse.required_ingredients,
+                            apiResponse.required_tools,
+                        ),
+                    )
+                    conn.commit()
 
             print(f"Upserted vector: {vector_upsert}")
 
