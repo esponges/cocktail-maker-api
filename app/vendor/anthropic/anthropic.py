@@ -1,6 +1,7 @@
 from anthropic import Anthropic
 import uuid
 import os
+import psycopg
 
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
@@ -17,6 +18,21 @@ class AnthropicService:
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(self, request: CreateCocktailRequestSchema):
+        with psycopg.connect(
+            host=os.environ.get("COCKROACH_DB_HOST"),
+            user=os.environ.get("COCKROACH_DB_USER"),
+            password=os.environ.get("COCKROACH_DB_PASSWORD") or "",
+            dbname="cocktails",
+            port=os.environ.get("COCKROACH_DB_PORT") or 123456,
+            # cursor_factory=psycopg.cursors.DictCursor,
+        ) as connection:
+            with connection.cursor() as cursor:
+                # all the columns
+                sql = "SHOW COLUMNS FROM predictions"
+                cursor.execute(sql)
+                results = cursor.fetchall()
+                print(results)
+
         tools = [
             {
                 "name": "create_cocktail",
@@ -150,6 +166,10 @@ class AnthropicService:
             else:
                 raise Exception("No response from API")
 
+            # TODO: figure out what to really embed, probably the query
+            # is not the right thing to embed, but something more specific
+            # like the mixers and tools which are more user specific
+            # also some metadata would be nice for metadata search
             embedding = await OpenAIService().create_embedding(query)
             embedding_data = embedding.data[0].embedding
             # {"id": "vec1", "values": [1.0, 1.5]},
@@ -157,6 +177,19 @@ class AnthropicService:
                 {"id": res["id"], "values": embedding_data}
             ]
             vector_upsert = await PineconeService().upsert(vector)
+
+            # TODO: store in RDB for caching
+            # id UUID PRIMARY KEY,
+            # name VARCHAR(255) NOT NULL,
+            # description TEXT NOT NULL,
+            # steps JSONB NOT NULL,
+            # is_alcoholic BOOLEAN NOT NULL,
+            # size VARCHAR(255) NOT NULL,
+            # cost DECIMAL(10, 2) NOT NULL,
+            # complexity VARCHAR(255) NOT NULL,
+            # required_ingredients TEXT[] NOT NULL,
+            # required_tools TEXT[]
+            
 
             print(f"Upserted vector: {vector_upsert}")
 
