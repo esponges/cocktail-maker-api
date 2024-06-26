@@ -1,7 +1,6 @@
 from anthropic import Anthropic
 import uuid
 import os
-import psycopg
 
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
@@ -9,7 +8,7 @@ from app.cocktail.schemas.cocktail import (
 )
 from app.vendor.openai.openai import OpenAIService
 from app.vendor.pinecone.pinecone import PineconeService
-
+from core.db.cocktails.cocktails import CocktailsDB
 
 class AnthropicService:
     MODEL_NAME = "claude-3-5-sonnet-20240620"
@@ -161,47 +160,9 @@ class AnthropicService:
             vector = [{"id": res["id"], "values": embedding_data}]
             vector_upsert = await PineconeService().upsert(vector)
 
-            # TODO: store in RDB for caching
-            with psycopg.connect(
-                host=os.environ.get("COCKROACH_DB_HOST"),
-                user=os.environ.get("COCKROACH_DB_USER"),
-                password=os.environ.get("COCKROACH_DB_PASSWORD") or "",
-                dbname="cocktails",
-                port=os.environ.get("COCKROACH_DB_PORT") or 123456,
-            ) as conn:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        """
-                        INSERT INTO predictions (id, name, description, steps, is_alcoholic, size, cost, complexity, required_ingredients, required_tools)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (id) DO UPDATE
-                        SET
-                            name = EXCLUDED.name,
-                            description = EXCLUDED.description,
-                            steps = EXCLUDED.steps,
-                            is_alcoholic = EXCLUDED.is_alcoholic,
-                            size = EXCLUDED.size,
-                            cost = EXCLUDED.cost,
-                            complexity = EXCLUDED.complexity,
-                            required_ingredients = EXCLUDED.required_ingredients,
-                            required_tools = EXCLUDED.required_tools
-                        """,
-                        (
-                            apiResponse.id,
-                            apiResponse.name,
-                            apiResponse.description,
-                            apiResponse.model_dump_json(include={"steps"}),
-                            apiResponse.is_alcoholic,
-                            apiResponse.size,
-                            apiResponse.cost,
-                            apiResponse.complexity,
-                            apiResponse.required_ingredients,
-                            apiResponse.required_tools,
-                        ),
-                    )
-                    conn.commit()
+            db_record = await CocktailsDB().upsert(apiResponse)
 
-            print(f"Upserted vector: {vector_upsert}")
+            print(f"Upserted vector: {vector_upsert} and db record: {db_record}")
 
             return apiResponse
         except Exception as e:
