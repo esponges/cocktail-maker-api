@@ -157,7 +157,9 @@ class AnthropicService:
             embedding = await OpenAIService().create_embedding(query)
             embedding_data = embedding.data[0].embedding
             # {"id": "vec1", "values": [1.0, 1.5]},
-            vector = [{"id": res["id"], "values": embedding_data}]
+            # use required ingredients as metadata
+
+            vector = [{"id": res["id"], "values": embedding_data, "metadata": { "required_ingredients": res["required_ingredients"] }}]
             vector_upsert = await PineconeService().upsert(vector)
 
             db_record = await CocktailsDB().upsert(apiResponse)
