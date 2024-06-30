@@ -51,3 +51,12 @@ class CocktailsDB:
             self.client.commit()
 
             return data
+        
+    # returns the first match from a list of ids
+    async def find_first(self, ids: list):
+        with self.client.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM predictions WHERE id = ANY(%s)",
+                (ids,),
+            )
+            return cur.fetchone()

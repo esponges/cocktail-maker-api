@@ -16,9 +16,14 @@ class PineconeService:
     ):
         # TODO: probably use env vars for the namespace and index name 
 
-        res = self.index.upsert(
+        return self.index.upsert(
             vectors,
             namespace="cocktails",
         )
 
-        return res
+    async def query(self, vectors: List[float]):
+        return self.index.query(
+            namespace="cocktails",
+            vector=vectors,
+            top_k=3
+        )
