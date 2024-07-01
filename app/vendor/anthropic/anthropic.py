@@ -26,7 +26,7 @@ class AnthropicService:
         embedding = await OpenAIService().create_embedding(NL_req)
         embedding_data = embedding.data[0].embedding
 
-        similarity_search = await PineconeService().query(embedding_data)
+        similarity_search = await PineconeService().query(embedding_data, request.base_ingredients)
 
         similar = []
         for item in similarity_search["matches"]:
@@ -55,6 +55,7 @@ class AnthropicService:
                     complexity,
                     required_ingredients,
                     required_tools,
+                    base_ingredients,
                 ) = first
                 model = CreateCocktailResponseSchema(
                     id=str(id),
@@ -67,7 +68,7 @@ class AnthropicService:
                     complexity=complexity,
                     required_ingredients=required_ingredients,
                     required_tools=required_tools,
-                    base_ingredients=request.base_ingredients,
+                    base_ingredients=base_ingredients,
                 )
                 return model
 

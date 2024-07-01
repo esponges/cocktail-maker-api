@@ -20,7 +20,7 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema):
             Key guidelines:
             - The steps MUST (not optional) at least use the following mixers: {", ".join(request.mixers)}.
             {"- The steps MUST (not optional) use the following alcoholic base: " + ", ".join(request.base_ingredients) if request.base_ingredients else ""}
-            {"- Along with the previous ingredients you can suggest extra mixers if necessary" if request.suggest_mixers else ""}
+            {"- Along with the previous ingredients you can suggest extra non alcoholic mixers if necessary" if request.suggest_mixers else ""}
             - Its size should be {request.size or "any of your choice"}. Options are: Shot, Cocktail, Longdrink, Mocktail.
             - Its raw cost should be of {request.cost or "5"} USD.
             - Its complexity should be {request.complexity or "Medium"}. Options are: Easy, Medium, Hard. 

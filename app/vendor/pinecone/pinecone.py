@@ -21,9 +21,12 @@ class PineconeService:
             namespace="cocktails",
         )
 
-    async def query(self, vectors: List[float]):
+    async def query(self, vectors: List[float], base_ingredients: List[str]):
         return self.index.query(
             namespace="cocktails",
             vector=vectors,
-            top_k=3
+            top_k=3,
+            # filter by exact match on base_ingredients
+            filter={ "$and": [{"base_ingredients": s} for s in base_ingredients] },
+            include_metadata=True
         )
