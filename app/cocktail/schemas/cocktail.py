@@ -46,6 +46,11 @@ class CreateCocktailRequestSchema(BaseModel):
         None,
         description="Whether the cocktail has a shaker",
     )
+    base_ingredients: list = Field(
+        None,
+        description="The base ingredients of the cocktail",
+        examples=["Vodka", "Gin", "Tequila"],
+    )
 
 
 class CreateCocktailResponseSchema(BaseModel):
@@ -106,4 +111,8 @@ class CreateCocktailResponseSchema(BaseModel):
             ["Shaker", "Vodka", "Gin", "Tequila"],
             ["Shaker", "Jigger", "Bacardi"],
         ],
+    )
+    base_ingredients: list = Field(
+        description="The base ingredients of the cocktail",
+        examples=["Vodka", "Gin", "Tequila"],
     )

@@ -21,8 +21,8 @@ class CocktailsDB:
         with self.client.cursor() as cur:
             cur.execute(
                 """
-                INSERT INTO predictions (id, name, description, steps, is_alcoholic, size, cost, complexity, required_ingredients, required_tools)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO predictions (id, name, description, steps, is_alcoholic, size, cost, complexity, required_ingredients, required_tools, base_ingredients)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (id) DO UPDATE
                 SET
                     name = EXCLUDED.name,
@@ -33,7 +33,8 @@ class CocktailsDB:
                     cost = EXCLUDED.cost,
                     complexity = EXCLUDED.complexity,
                     required_ingredients = EXCLUDED.required_ingredients,
-                    required_tools = EXCLUDED.required_tools
+                    required_tools = EXCLUDED.required_tools,
+                    base_ingredients = EXCLUDED.base_ingredients
                 """,
                 (
                     data.id,
@@ -46,6 +47,7 @@ class CocktailsDB:
                     data.complexity,
                     data.required_ingredients,
                     data.required_tools,
+                    data.base_ingredients,
                 ),
             )
             self.client.commit()

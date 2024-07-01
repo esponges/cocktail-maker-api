@@ -12,6 +12,7 @@ from core.db.cocktails.cocktails import CocktailsDB
 from app.vendor.anthropic.schemas.create_cocktail import create_cocktail
 from app.vendor.anthropic.queries.create_cocktail import getCreateCocktailQuery
 
+
 class AnthropicService:
     MODEL_NAME = "claude-3-5-sonnet-20240620"
 
@@ -19,36 +20,59 @@ class AnthropicService:
         self.client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
     async def create_cocktail(self, request: CreateCocktailRequestSchema):
-        # TODO: do a similarity search from vector store before creating a new one
-        # if the score is low, then create a new one otherwise return the existing db record
 
-        query = getCreateCocktailQuery(request)
-        
-        embedding = await OpenAIService().create_embedding(query)
+        mixers = request.mixers + (request.base_ingredients or [])
+        NL_req = f"mixers: {', '.join(mixers)}, moment: {request.moment}, shaker: {request.has_shaker}, tools: {request.required_tools}"
+        embedding = await OpenAIService().create_embedding(NL_req)
         embedding_data = embedding.data[0].embedding
 
         similarity_search = await PineconeService().query(embedding_data)
 
-        # filter all the elements that score above 0.8
         similar = []
         for item in similarity_search["matches"]:
-            # todo: is this the right val?
-            if item["score"] > 0.8:
+            min_score = float(os.getenv("SIMILARITY_SEARCH_MIN_SCORE", "0.8"))
+
+            if item["score"] > min_score:
                 similar.append(item)
 
         if len(similar) > 0:
             # order by highest score
-            similar.sort(key=lambda x: x["score"], reverse=True)
+            similar.sort(key=lambda val: val["score"], reverse=True)
             ids = [item["id"] for item in similar]
             first = await CocktailsDB().find_first(ids)
 
             # if any found, return the first one
+            # otherwise create a new prediction
             if first is not None:
-                return first
-        
-        tools = [create_cocktail["v1"]]
+                (
+                    id,
+                    name,
+                    description,
+                    steps,
+                    is_alcoholic,
+                    size,
+                    cost,
+                    complexity,
+                    required_ingredients,
+                    required_tools,
+                ) = first
+                model = CreateCocktailResponseSchema(
+                    id=str(id),
+                    name=name,
+                    description=description,
+                    steps=steps["steps"],
+                    is_alcoholic=is_alcoholic,
+                    size=size,
+                    cost=cost,
+                    complexity=complexity,
+                    required_ingredients=required_ingredients,
+                    required_tools=required_tools,
+                    base_ingredients=request.base_ingredients,
+                )
+                return model
 
-        return tools
+        query = getCreateCocktailQuery(request)
+        tools = [create_cocktail["v1"]]
 
         response = self.client.messages.create(
             model=self.MODEL_NAME,
@@ -69,22 +93,20 @@ class AnthropicService:
         try:
             if res is not None:
                 res["id"] = str(uuid.uuid4())
+                res["base_ingredients"] = request.base_ingredients
                 apiResponse = CreateCocktailResponseSchema(**res)
             else:
                 raise Exception("No response from API")
-
-            embedding = await OpenAIService().create_embedding(query)
-            embedding_data = embedding.data[0].embedding
 
             upsert_data = [
                 {
                     "id": res["id"],
                     "values": embedding_data,
-                    # TODO: figure out what to really embed, probably the query
-                    # is not the right thing to embed, but something more specific
-                    # like the mixers and tools which are more user specific
-                    # also some metadata would be nice for metadata search
-                    "metadata": {"required_ingredients": res["required_ingredients"]},
+                    # TODO: keep this metadata?
+                    "metadata": {
+                        "required_ingredients": res["required_ingredients"],
+                        "base_ingredients": res["base_ingredients"],
+                    },
                 }
             ]
             vector_upsert = await PineconeService().upsert(upsert_data)
