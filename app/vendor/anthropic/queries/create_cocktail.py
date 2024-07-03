@@ -1,7 +1,8 @@
+from typing import List
 from app.cocktail.schemas.cocktail import CreateCocktailRequestSchema
 
 
-def getCreateCocktailQuery(request: CreateCocktailRequestSchema):
+def getCreateCocktailQuery(request: CreateCocktailRequestSchema, prevSteps: List[str]):
     return f"""
         <text>
             You are a masterful cocktail creator that can create new and unique cocktail recipes. Please follow the following instructions for the recipe creation:
@@ -27,7 +28,7 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema):
             A Hard cocktail usually requires more time and tooling and it is not suitable for large groups or first-timers.
             - The steps require a shaker: {"True" if request.has_shaker else "False"}.
             {("- The steps could use any of these tools: " + ", ".join(request.required_tools)) if request.required_tools else ""}
-            {"- Make a completely different than these previous: {request.previous_recipes}" if request.previous_recipes else ""}
+            {"- Make a completely different than these previous recipes: " + ", ".join(prevSteps) + "" if len(prevSteps) > 0 else ""}
         </text>
 
         Use the create_cocktail tool.

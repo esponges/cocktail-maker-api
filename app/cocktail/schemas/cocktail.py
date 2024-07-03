@@ -34,7 +34,7 @@ class CreateCocktailRequestSchema(BaseModel):
         None,
         description="The previous recipes of the cocktail",
         max_length=255,
-        examples=["Add vodka, add gin, add tequila", "Add vodka, add bacardi"],
+        examples=["uuid-1", "uuid-2", "uuid-3"],
     )
     moment: str = Field(
         None,

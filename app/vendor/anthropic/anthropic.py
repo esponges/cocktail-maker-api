@@ -1,6 +1,7 @@
 from anthropic import Anthropic
 import uuid
 import os
+from functools import reduce
 
 from app.cocktail.schemas.cocktail import (
     CreateCocktailRequestSchema,
@@ -26,53 +27,65 @@ class AnthropicService:
         embedding = await OpenAIService().create_embedding(NL_req)
         embedding_data = embedding.data[0].embedding
 
-        similarity_search = await PineconeService().query(embedding_data, request.base_ingredients)
+        # previous_recipes is populated it means that the user wants to retry using the same parameters
+        previous_recipes_steps = []
+        if (len(request.previous_recipes) == 0):
+            similarity_search = await PineconeService().query(embedding_data, request.base_ingredients)
 
-        similar = []
-        for item in similarity_search["matches"]:
-            min_score = float(os.getenv("SIMILARITY_SEARCH_MIN_SCORE", "0.8"))
+            similar = []
+            for item in similarity_search["matches"]:
+                min_score = float(os.getenv("SIMILARITY_SEARCH_MIN_SCORE", "0.8"))
 
-            if item["score"] > min_score:
-                similar.append(item)
+                if item["score"] > min_score:
+                    similar.append(item)
 
-        if len(similar) > 0:
-            # order by highest score
-            similar.sort(key=lambda val: val["score"], reverse=True)
-            ids = [item["id"] for item in similar]
-            first = await CocktailsDB().find_first(ids)
+            if len(similar) > 0:
+                # order by highest score
+                similar.sort(key=lambda val: val["score"], reverse=True)
+                ids = [item["id"] for item in similar]
+                first = await CocktailsDB().find_first(ids)
 
-            # if any found, return the first one
-            # otherwise create a new prediction
-            if first is not None:
-                (
-                    id,
-                    name,
-                    description,
-                    steps,
-                    is_alcoholic,
-                    size,
-                    cost,
-                    complexity,
-                    required_ingredients,
-                    required_tools,
-                    base_ingredients,
-                ) = first
-                model = CreateCocktailResponseSchema(
-                    id=str(id),
-                    name=name,
-                    description=description,
-                    steps=steps["steps"],
-                    is_alcoholic=is_alcoholic,
-                    size=size,
-                    cost=cost,
-                    complexity=complexity,
-                    required_ingredients=required_ingredients,
-                    required_tools=required_tools,
-                    base_ingredients=base_ingredients,
-                )
-                return model
+                # if any found, return the first one
+                # otherwise create a new prediction
+                if first is not None:
+                    (
+                        id,
+                        name,
+                        description,
+                        steps,
+                        is_alcoholic,
+                        size,
+                        cost,
+                        complexity,
+                        required_ingredients,
+                        required_tools,
+                        base_ingredients,
+                    ) = first
+                    model = CreateCocktailResponseSchema(
+                        id=str(id),
+                        name=name,
+                        description=description,
+                        steps=steps["steps"],
+                        is_alcoholic=is_alcoholic,
+                        size=size,
+                        cost=cost,
+                        complexity=complexity,
+                        required_ingredients=required_ingredients,
+                        required_tools=required_tools,
+                        base_ingredients=base_ingredients,
+                    )
+                    return model
+        else: 
+            # using the ids from the previous recipes get the steps for each one
+            batch = await CocktailsDB().find_batch(request.previous_recipes)
 
-        query = getCreateCocktailQuery(request)
+            for item in batch:
+                steps = reduce(lambda acc, val: acc + " " + val['description'], item[3]["steps"], "")
+                print(steps)
+                
+                previous_recipes_steps.append(steps)
+        
+        query = getCreateCocktailQuery(request, previous_recipes_steps)
         tools = [create_cocktail["v1"]]
 
         response = self.client.messages.create(
