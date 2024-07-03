@@ -62,3 +62,11 @@ class CocktailsDB:
                 (ids,),
             )
             return cur.fetchone()
+        
+    async def find_batch(self, ids: list):
+        with self.client.cursor() as cur:
+            cur.execute(
+                "SELECT * FROM predictions WHERE id = ANY(%s)",
+                (ids,),
+            )
+            return cur.fetchall()
