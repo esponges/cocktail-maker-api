@@ -20,6 +20,7 @@ def create_app() -> FastAPI:
         version="1.0.0",
         docs_url=None if config.ENV == "production" else "/docs",
         redoc_url=None if config.ENV == "production" else "/redoc",
+        debug=True
         # # dependencies=[Depends(Logging)],
         # middleware=make_middleware(),
     )
