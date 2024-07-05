@@ -29,7 +29,7 @@ class AnthropicService:
 
         # previous_recipes is populated it means that the user wants to retry using the same parameters
         previous_recipes_steps = []
-        if (len(request.previous_recipes) == 0):
+        if (request.previous_recipes is not None and len(request.previous_recipes) == 0):
             similarity_search = await PineconeService().query(embedding_data, request.base_ingredients)
 
             similar = []
