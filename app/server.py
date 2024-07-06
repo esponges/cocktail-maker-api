@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
         "http://localhost:3000",
         "http://localhost:3001",
         "http://localhost:3002",
-        "https://ai-mixologist.vercel.app/"
+        "https://ai-mixologist.vercel.app"
     ]
 
     app_.add_middleware(
