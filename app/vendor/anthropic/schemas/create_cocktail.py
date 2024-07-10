@@ -21,13 +21,16 @@ create_cocktail = {
                         "properties": {
                             "description": {
                                 "type": "string",
-                                "description": "The super detailed description of what to do. Includes portion sizes, directions, etc.",
+                                "description": "The super detailed description of what to do. Includes portion sizes, tools used and detailed instructions.",
                             },
                             "index": {
                                 "type": "string",
                                 "description": "The index of the step",
                             },
-                            # todo: return an action that can be associated with an image from the cdn
+                            "action": {
+                                "type": "string",
+                                "description": "an action (if applies otherwise return empty string) associated with the step. Options: shake, muddle, jigger_pour, pour, strain, glass_fill, top_off, garnish"
+                            }
                         },
                     },
                 },

@@ -9,9 +9,9 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema, prevSteps: List
             * The cocktail should fit the following activity: {request.moment}
             * Then you will give a general and understandable description of the cocktail.
             * Finally you will give the SUPER DETAILED step by step instructions of the cocktail. This includes detailed portions of each ingredient. 
-            If no tools were provided the steps won't use any tools. Not even a Shaker. 
-            Avoid squashing several steps into one. For example:
-
+            * If no tools were provided the steps won't use any tools. Not even a Shaker.
+ 
+            * Avoid squashing several steps into one. For example:
             - WRONG: Fill a cocktail shaker with ice. Add 2 oz of mezcal, 1 oz of freshly brewed espresso, and 1 oz of fresh lemon juice. Shake vigorously for 10-15 seconds until well-chilled.
             - CORRECT:
                 1. Fill a cocktail shaker with ice.
