@@ -55,7 +55,7 @@ create_cocktail = {
                     "description": "A list of required ingredients",
                     "items": {
                         "type": "string",
-                        "description": "The name of the required ingredient, not the same as the name of the mixers",
+                        "description": "The name of the required ingredient. Avoid using special characters like _ or -",
                     },
                 },
                 "required_tools": {
