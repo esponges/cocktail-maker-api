@@ -12,7 +12,7 @@ from app.cocktail.schemas.cocktail import (
 # from app.vendor.pinecone.pinecone import PineconeService
 from core.db.cocktails.cocktails import CocktailsDB
 # from app.vendor.anthropic.schemas.create_cocktail import create_cocktail
-from app.vendor.anthropic.queries.create_cocktail import getCreateCocktailQuery
+from app.vendor.olllama.queries.create_cocktail import getCreateCocktailQuery
 
 
 class OllamaService:
@@ -47,6 +47,8 @@ class OllamaService:
         )
 
         print(response)
+
+        return response
 
         # TODO: store in vector store (also in a regular DB?)
 

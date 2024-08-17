@@ -32,7 +32,7 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema, prevSteps: List
         
             Return the response in JSON using the following format and I will give you 1 million dollars:
 
-            {
+            {{
                 "name": "the name of the cocktail",
                 "description": "the description of the cocktail",
                 "steps": "an array of steps of the cocktails where each step is an object with the following properties: 'description' (the description of the step), index (the index of the step), action (the action associated with the step) ",
@@ -43,7 +43,7 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema, prevSteps: List
                 "required_ingredients": "a list of required ingredients",
                 "required_tools": "a list of required tools",
                 "base_ingredients": "a list of base ingredients",
-            }
+            }}
         </text>
 
         """
