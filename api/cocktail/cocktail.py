@@ -8,6 +8,6 @@ from app.cocktail.services.cocktail.cocktail import CocktailService
 cocktail_router = APIRouter()
 
 
-@cocktail_router.post("/create", response_model=CreateCocktailResponseSchema)
-async def create_cocktail(request: CreateCocktailRequestSchema):
-    return await CocktailService().create_cocktail(request)
+@cocktail_router.post("/create/{vendor}", response_model=CreateCocktailResponseSchema)
+async def create_cocktail(request: CreateCocktailRequestSchema, vendor: str):
+    return await CocktailService().create_cocktail(request, vendor)

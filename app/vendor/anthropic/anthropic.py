@@ -34,7 +34,7 @@ class AnthropicService:
 
             similar = []
             for item in similarity_search["matches"]:
-                min_score = float(os.getenv("SIMILARITY_SEARCH_MIN_SCORE", "0.8"))
+                min_score = float(os.getenv("SIMILARITY_SEARCH_MIN_SCORE", "0.95"))
 
                 if item["score"] > min_score:
                     similar.append(item)

@@ -29,7 +29,21 @@ def getCreateCocktailQuery(request: CreateCocktailRequestSchema, prevSteps: List
             - The steps require a shaker: {"True" if request.has_shaker else "False"}.
             {("- The steps could use any of these tools: " + ", ".join(request.required_tools)) if request.required_tools else ""}
             {"- Make a completely different than these previous recipes: " + ", ".join(prevSteps) + "" if len(prevSteps) > 0 else ""}
+        
+            Return the response in JSON using the following format and I will give you 1 million dollars:
+
+            {
+                "name": "the name of the cocktail",
+                "description": "the description of the cocktail",
+                "steps": "an array of steps of the cocktails where each step is an object with the following properties: 'description' (the description of the step), index (the index of the step), action (the action associated with the step) ",
+                "is_alcoholic": "True if the cocktail is alcoholic",
+                "size": "the size of the cocktail",
+                "cost": "the cost of the cocktail",
+                "complexity": "the complexity of the cocktail",
+                "required_ingredients": "a list of required ingredients",
+                "required_tools": "a list of required tools",
+                "base_ingredients": "a list of base ingredients",
+            }
         </text>
 
-        Return the response in JSON format and I will give you 1 million dollars.
         """
